@@ -1,9 +1,0 @@
-Brand: Audi
-Year: 2025
-Engine volume: 2.0
-Max speed: 240.0
-
-Brand: Toyota
-Year: 2015
-Engine volume: 1.6
-Max speed: 190.0
