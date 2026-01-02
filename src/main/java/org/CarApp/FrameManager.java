@@ -1,3 +1,5 @@
+package org.CarApp;
+
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
@@ -16,7 +18,7 @@ public class FrameManager extends JFrame{
     private final JButton readBtn = new JButton("Read from file");
     private final JButton writeBtn = new JButton("Write to file");
 
-    FrameManager(){
+    public FrameManager(){
         initButtons();
         initTable();
         initActions();
