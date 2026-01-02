@@ -1,20 +1,20 @@
-package org.Listeners;
+package org.gerundiyyy;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class FrameManager extends JFrame {
-    private final JLabel MainLabel = new JLabel("Наведитесь на эту надпись");
+    private final JLabel MainLabel = new JLabel("Point to this label");
 
     private final JButton b1 = new JButton("button1");
     private final JButton b2 = new JButton("button2");
     private final JButton b3 = new JButton("button3");
     private final JButton b4 = new JButton("button4");
 
-    private final JCheckBox ch1 = new JCheckBox("checkbox1");
-    private final JCheckBox ch2 = new JCheckBox("checkbox2");
-    private final JCheckBox ch3 = new JCheckBox("checkbox3");
-    private final JCheckBox ch4 = new JCheckBox("checkbox4");
+    private final JRadioButton ch1 = new JRadioButton("radiobutton1");
+    private final JRadioButton ch2 = new JRadioButton("radiobutton2");
+    private final JRadioButton ch3 = new JRadioButton("radiobutton3");
+    private final JRadioButton ch4 = new JRadioButton("radiobutton4");
 
     FrameManager(){
         initComponents();
@@ -33,7 +33,7 @@ public class FrameManager extends JFrame {
         return btnPanel;
     }
 
-    public JPanel getCheckBoxes(){
+    public JPanel getJRadioButtons(){
         JPanel chbPanel = new JPanel();
         chbPanel.setLayout(new BoxLayout(chbPanel, BoxLayout.Y_AXIS));
 
@@ -50,7 +50,7 @@ public class FrameManager extends JFrame {
         cp.setLayout(new BoxLayout(cp, BoxLayout.Y_AXIS));
 
         add(MainLabel);
-        add(getCheckBoxes());
+        add(getJRadioButtons());
     }
 
     private void initActions(){

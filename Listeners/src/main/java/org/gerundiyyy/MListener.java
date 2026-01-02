@@ -1,4 +1,4 @@
-package org.Listeners;
+package org.gerundiyyy;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ public class MListener extends MouseAdapter {
         FrameManager frame = (FrameManager) SwingUtilities.getWindowAncestor(comp);
         Container cp = frame.getContentPane();
 
-        cp.remove(frame.getCheckBoxes());
+        cp.remove(frame.getJRadioButtons());
         cp.add(frame.getButtons());
         cp.revalidate();
         cp.repaint();
@@ -25,7 +25,7 @@ public class MListener extends MouseAdapter {
         Container cp = frame.getContentPane();
 
         cp.remove(frame.getButtons());
-        cp.add(frame.getCheckBoxes());
+        cp.add(frame.getJRadioButtons());
         cp.revalidate();
         cp.repaint();
     }

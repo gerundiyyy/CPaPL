@@ -1,4 +1,4 @@
-package org.Listeners.example;
+package org.gerundiyyy.example;
 
 import javax.swing.*;
 import java.awt.event.*;
