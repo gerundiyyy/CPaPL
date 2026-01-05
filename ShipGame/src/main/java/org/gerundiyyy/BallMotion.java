@@ -1,14 +1,15 @@
 package org.gerundiyyy;
 
+
 import java.awt.geom.Rectangle2D;
 
-public class ShipMotion extends MotionModel implements Runnable {
-    private final ShipPainter painter;
+public class BallMotion extends MotionModel implements Runnable {
+    private final BallPainter painter;
     private final int seaW, seaH;
     private volatile boolean running = true;
 
-    public ShipMotion(int CoordX, int CoordY, int SpeedX, int SpeedY,
-                      ShipPainter painter, int seaW, int seaH) {
+    public BallMotion(int CoordX, int CoordY, int SpeedX, int SpeedY,
+                      BallPainter painter, int seaW, int seaH) {
         super(CoordX, CoordY, SpeedX, SpeedY);
         this.painter = painter;
         this.seaW = seaW;
@@ -19,11 +20,11 @@ public class ShipMotion extends MotionModel implements Runnable {
         CoordX += SpeedX;
         CoordY += SpeedY;
         Rectangle2D bounds = painter.getBounds();
-        int shipW = (int) Math.ceil(bounds.getWidth());
-        int shipH = (int) Math.ceil(bounds.getHeight());
+        int ballW = (int) Math.ceil(bounds.getWidth());
+        int ballH = (int) Math.ceil(bounds.getHeight());
 
-        if (CoordX < 0 || CoordX + shipW / 2 > seaW) SpeedX = -SpeedX;
-        if (CoordY < 0 || CoordY + shipH / 2 > seaH) SpeedY = -SpeedY;
+        if (CoordX < 0 || CoordX + ballW / 2 > seaW) SpeedX = -SpeedX;
+        if (CoordY < 0 || CoordY + ballH / 2 > seaH) SpeedY = -SpeedY;
     }
 
     @Override
@@ -45,3 +46,4 @@ public class ShipMotion extends MotionModel implements Runnable {
     public int getCoordX() { return CoordX; }
     public int getCoordY() { return CoordY; }
 }
+

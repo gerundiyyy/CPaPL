@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 
 public interface Drawable {
     void draw(Graphics2D g2);
-    void createShipShape();
+    void createShapeOfTheFigure();
     Rectangle2D getBounds();
 }
+

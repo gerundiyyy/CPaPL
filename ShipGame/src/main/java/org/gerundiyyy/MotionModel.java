@@ -1,64 +1,62 @@
 package org.gerundiyyy;
 
-import java.awt.geom.Rectangle2D;
-
 public abstract class MotionModel {
-    protected int shipCoordX;
-    protected int shipCoordY;
-    protected int shipSpeedX;
-    protected int shipSpeedY;
+    protected int CoordX;
+    protected int CoordY;
+    protected int SpeedX;
+    protected int SpeedY;
 
-    public MotionModel(int shipCoordX, int shipCoordY, int shipSpeedX, int shipSpeedY) {
-        this.shipCoordX = shipCoordX;
-        this.shipCoordY = shipCoordY;
-        this.shipSpeedX = shipSpeedX;
-        this.shipSpeedY = shipSpeedY;
+    public MotionModel(int CoordX, int CoordY, int SpeedX, int SpeedY) {
+        this.CoordX = CoordX;
+        this.CoordY = CoordY;
+        this.SpeedX = SpeedX;
+        this.SpeedY = SpeedY;
     }
 
     protected abstract void updatePosition();
 
     // Координаты
-    public int getShipCoordX() {
-        return shipCoordX;
+    public int getCoordX() {
+        return CoordX;
     }
 
-    public void setShipCoordX(int shipCoordX) {
-        this.shipCoordX = shipCoordX;
+    public void setCoordX(int coordX) {
+        this.CoordX = coordX;
     }
 
-    public int getShipCoordY() {
-        return shipCoordY;
+    public int getCoordY() {
+        return CoordY;
     }
 
-    public void setShipCoordY(int shipCoordY) {
-        this.shipCoordY = shipCoordY;
+    public void setCoordY(int coordY) {
+        this.CoordY = coordY;
     }
 
     // Скорости
-    public int getShipSpeedX() {
-        return shipSpeedX;
+    public int getSpeedX() {
+        return SpeedX;
     }
 
-    public void setShipSpeedX(int shipSpeedX) {
-        this.shipSpeedX = shipSpeedX;
+    public void setSpeedX(int speedX) {
+        this.SpeedX = speedX;
     }
 
-    public int getShipSpeedY() {
-        return shipSpeedY;
+    public int getSpeedY() {
+        return SpeedY;
     }
 
-    public void setShipSpeedY(int shipSpeedY) {
-        this.shipSpeedY = shipSpeedY;
+    public void setSpeedY(int speedY) {
+        this.SpeedY = speedY;
     }
 
     // Удобные методы для установки/получения пары значений
     public void setPosition(int x, int y) {
-        this.shipCoordX = x;
-        this.shipCoordY = y;
+        this.CoordX = x;
+        this.CoordY = y;
     }
 
     public void setSpeed(int vx, int vy) {
-        this.shipSpeedX = vx;
-        this.shipSpeedY = vy;
+        this.SpeedX = vx;
+        this.SpeedY = vy;
     }
 }

@@ -7,32 +7,37 @@ import java.awt.event.ComponentEvent;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class AnimPanel extends JPanel {
-    private ShipPainter ship = new ShipPainter();
+    private final ShipPainter ship = new ShipPainter();
+    private final CannonPainter canon = new CannonPainter();
+    private final BallPainter ball = new BallPainter();
     private ShipMotion shipMotion;
-    private Timer timer;
+    private BallMotion ballMotion;
 
     public AnimPanel(int startX, int startY) {
-        // не запускаем motion в конструкторе, ждём размера панели
         setPreferredSize(new Dimension(600, 400));
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent e) {
-                startMotion(startX, startY);
-            }
-            @Override
-            public void componentResized(ComponentEvent e) {
-                startMotion(startX, startY);
-            }
-        });
+        addComponentListener(new AnimPanelListener(this, startX, startY));
     }
 
-    public void startMotion(int startX, int startY) {
+    public void startShipMotion(int startX, int startY) {
         shipMotion = new ShipMotion(startX, startY,
                 ThreadLocalRandom.current().nextInt(2, 5),
                 ThreadLocalRandom.current().nextInt(0, 3),
                 ship, getWidth(), getHeight() * 2 / 3);
         new Thread(shipMotion).start();
-        timer = new Timer(16, new TimerListener(this));
+        Timer timer = new Timer(16, new TimerListener(this));
+        timer.start();
+    }
+
+    public void startBallMotion() {
+        int startX = 400;
+        int startY = 250;
+
+        ballMotion = new BallMotion(startX, startY,
+                ThreadLocalRandom.current().nextInt(2, 5),
+                ThreadLocalRandom.current().nextInt(0, 3),
+                ball, getWidth(), getHeight() * 2 / 3);
+        new Thread(ballMotion).start();
+        Timer timer = new Timer(16, new TimerListener(this));
         timer.start();
     }
 
@@ -50,8 +55,9 @@ public class AnimPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         try {
             paintBackgroud(g2);
-            if (shipMotion != null) { g2.translate(shipMotion.getShipCoordX(), shipMotion.getShipCoordY()); }
-            ship.draw(g2);
+            paintCanon(g2);
+            paintBall(g2);
+            paintShip(g2);
         } finally {
             g2.dispose();
         }
@@ -67,6 +73,28 @@ public class AnimPanel extends JPanel {
 
         g2.setColor(new Color(242, 193, 41));
         g2.fillRect(0, twoThirds, w, h - twoThirds);
+    }
+
+    private void paintBall(Graphics2D g2) {
+        if (ballMotion != null) {
+            g2.translate(-400, -250);
+            ball.draw(g2);
+            g2.translate(-400, -250);
+        }
+    }
+
+    private void paintCanon(Graphics2D g2) {
+        g2.translate(400, 250);
+        canon.draw(g2);
+        g2.translate(-400, -250);
+    }
+
+    private void paintShip(Graphics2D g2) {
+        if (shipMotion != null) {
+            g2.translate(shipMotion.getCoordX(), shipMotion.getCoordY());
+            ship.draw(g2);
+            g2.translate(-shipMotion.getCoordX(), -shipMotion.getCoordY());
+        }
     }
 
     private static class TransformSaver {
