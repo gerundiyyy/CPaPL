@@ -17,11 +17,11 @@ public class AnimPanelListener extends ComponentAdapter{
     @Override
     public void componentShown(ComponentEvent e) {
         ap.startShipMotion(startX, startY);
-        ap.startBallMotion();
+        ap.addMouseListener(new ShotListener(ap));
     }
     @Override
     public void componentResized(ComponentEvent e) {
         ap.startShipMotion(startX, startY);
-        ap.startBallMotion();
+        ap.addMouseListener(new ShotListener(ap));
     }
 }

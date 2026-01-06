@@ -2,24 +2,27 @@ package org.gerundiyyy;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class AnimPanel extends JPanel {
     private final ShipPainter ship = new ShipPainter();
     private final CannonPainter canon = new CannonPainter();
-    private final BallPainter ball = new BallPainter();
+    private final Vector<BallInstance> balls;
+    private int startBallX;
+    private int startBallY;
     private ShipMotion shipMotion;
-    private BallMotion ballMotion;
 
-    public AnimPanel(int startX, int startY) {
+    public AnimPanel(int startShipX, int startShipY, int startBallX, int startBallY) {
+        this.startBallX = startBallX;
+        this.startBallY = startBallY;
         setPreferredSize(new Dimension(600, 400));
-        addComponentListener(new AnimPanelListener(this, startX, startY));
+        addComponentListener(new AnimPanelListener(this, startShipX, startShipY));
+        balls = new Vector<>();
     }
 
-    public void startShipMotion(int startX, int startY) {
-        shipMotion = new ShipMotion(startX, startY,
+    public void startShipMotion(int startShipX, int startShipY) {
+        shipMotion = new ShipMotion(startShipX, startShipY,
                 ThreadLocalRandom.current().nextInt(2, 5),
                 ThreadLocalRandom.current().nextInt(0, 3),
                 ship, getWidth(), getHeight() * 2 / 3);
@@ -28,17 +31,20 @@ public class AnimPanel extends JPanel {
         timer.start();
     }
 
-    public void startBallMotion() {
-        int startX = 400;
-        int startY = 250;
-
-        ballMotion = new BallMotion(startX, startY,
-                ThreadLocalRandom.current().nextInt(2, 5),
-                ThreadLocalRandom.current().nextInt(0, 3),
-                ball, getWidth(), getHeight() * 2 / 3);
-        new Thread(ballMotion).start();
+    public void startBallMotion(BallInstance ballInst) {
+        ballInst.setMotion(new BallMotion(startBallX, startBallY,
+                ThreadLocalRandom.current().nextInt(-5, 5),
+                ThreadLocalRandom.current().nextInt(-3, 3),
+                ballInst.getBall(), getWidth(), getHeight() * 2 / 3));
+        new Thread(ballInst.getMotion()).start();
         Timer timer = new Timer(16, new TimerListener(this));
         timer.start();
+    }
+
+    public void spawnBall(BallInstance ballInst){
+        balls.add(ballInst);
+        startBallMotion(ballInst);
+        repaint();
     }
 
     public void setShipMotion(ShipMotion shipMotion) {
@@ -56,7 +62,7 @@ public class AnimPanel extends JPanel {
         try {
             paintBackgroud(g2);
             paintCanon(g2);
-            paintBall(g2);
+            paintBalls(g2);
             paintShip(g2);
         } finally {
             g2.dispose();
@@ -75,11 +81,13 @@ public class AnimPanel extends JPanel {
         g2.fillRect(0, twoThirds, w, h - twoThirds);
     }
 
-    private void paintBall(Graphics2D g2) {
-        if (ballMotion != null) {
-            g2.translate(-400, -250);
-            ball.draw(g2);
-            g2.translate(-400, -250);
+    private void paintBalls(Graphics2D g2) {
+        for(BallInstance ballInst : balls){
+            if (ballInst.getMotion() != null) {
+                g2.translate(ballInst.getMotion().getCoordX(), ballInst.getMotion().getCoordY());
+                ballInst.getBall().draw(g2);
+                g2.translate(-ballInst.getMotion().getCoordX(), -ballInst.getMotion().getCoordY());
+            }
         }
     }
 
@@ -94,20 +102,6 @@ public class AnimPanel extends JPanel {
             g2.translate(shipMotion.getCoordX(), shipMotion.getCoordY());
             ship.draw(g2);
             g2.translate(-shipMotion.getCoordX(), -shipMotion.getCoordY());
-        }
-    }
-
-    private static class TransformSaver {
-        private final Graphics2D g;
-        private final java.awt.geom.AffineTransform old;
-
-        TransformSaver(Graphics2D g) {
-            this.g = g;
-            this.old = g.getTransform();
-        }
-
-        void restore() {
-            g.setTransform(old);
         }
     }
 }
