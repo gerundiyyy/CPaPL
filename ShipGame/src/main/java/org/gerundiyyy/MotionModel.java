@@ -1,62 +1,107 @@
 package org.gerundiyyy;
 
-public abstract class MotionModel {
-    protected int CoordX;
-    protected int CoordY;
-    protected int SpeedX;
-    protected int SpeedY;
+import java.awt.geom.Rectangle2D;
 
-    public MotionModel(int CoordX, int CoordY, int SpeedX, int SpeedY) {
+public abstract class MotionModel {
+    protected int CoordX, CoordY, SpeedX, SpeedY;
+    protected int modelW, modelH;
+    protected volatile boolean running;
+    protected Rectangle2D RectCollision;
+
+    public MotionModel(int CoordX, int CoordY, int SpeedX, int SpeedY, boolean running) {
         this.CoordX = CoordX;
         this.CoordY = CoordY;
         this.SpeedX = SpeedX;
         this.SpeedY = SpeedY;
+        this.running = running;
+    }
+
+    public void stop() {
+        running = false;
     }
 
     protected abstract void updatePosition();
+    protected abstract void calculateBounds();
+    public abstract void checkWBorder();
+    public abstract void checkHBorder();
 
-    // Координаты
-    public int getCoordX() {
+    // Синхронизированные геттеры/сеттеры для потокобезопасности
+    public synchronized int getCoordX() {
         return CoordX;
     }
 
-    public void setCoordX(int coordX) {
+    public synchronized void setCoordX(int coordX) {
         this.CoordX = coordX;
     }
 
-    public int getCoordY() {
+    public synchronized int getCoordY() {
         return CoordY;
     }
 
-    public void setCoordY(int coordY) {
+    public synchronized void setCoordY(int coordY) {
         this.CoordY = coordY;
     }
 
-    // Скорости
-    public int getSpeedX() {
+    public synchronized int getSpeedX() {
         return SpeedX;
     }
 
-    public void setSpeedX(int speedX) {
+    public synchronized void setSpeedX(int speedX) {
         this.SpeedX = speedX;
     }
 
-    public int getSpeedY() {
+    public synchronized int getSpeedY() {
         return SpeedY;
     }
 
-    public void setSpeedY(int speedY) {
+    public synchronized void setSpeedY(int speedY) {
         this.SpeedY = speedY;
     }
 
-    // Удобные методы для установки/получения пары значений
-    public void setPosition(int x, int y) {
+    public synchronized void setPosition(int x, int y) {
         this.CoordX = x;
         this.CoordY = y;
     }
 
-    public void setSpeed(int vx, int vy) {
+    public synchronized void setSpeed(int vx, int vy) {
         this.SpeedX = vx;
         this.SpeedY = vy;
+    }
+
+    // Координаты столкновения — центр модели
+    protected synchronized void calculateRectCollision() {
+        RectCollision = new Rectangle2D.Double(CoordX / 2,CoordY / 2, modelW / 2, modelH / 2);
+    }
+
+    public synchronized Rectangle2D getRectCollision() {
+        return RectCollision;
+    }
+
+    public synchronized void setRectCollision(Rectangle2D RectCollision) {
+        this.RectCollision = RectCollision;
+    }
+
+    public synchronized int getModelW() {
+        return modelW;
+    }
+
+    public synchronized void setModelW(int modelW) {
+        this.modelW = modelW;
+    }
+
+    public synchronized int getModelH() {
+        return modelH;
+    }
+
+    public synchronized void setModelH(int modelH) {
+        this.modelH = modelH;
+    }
+
+    public synchronized boolean isRunning() {
+        return running;
+    }
+
+    public synchronized void setRunning(boolean running) {
+        this.running = running;
     }
 }

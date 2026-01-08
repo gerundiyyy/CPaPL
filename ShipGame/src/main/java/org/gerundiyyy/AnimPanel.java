@@ -2,20 +2,18 @@ package org.gerundiyyy;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class AnimPanel extends JPanel {
-    private final ShipPainter ship = new ShipPainter();
+    private ShipPainter ship = new ShipPainter();
     private final CannonPainter canon = new CannonPainter();
     private final Vector<BallInstance> balls;
-    private int startBallX;
-    private int startBallY;
     private ShipMotion shipMotion;
+    private ExplosionPainter exp = new ExplosionPainter();
 
-    public AnimPanel(int startShipX, int startShipY, int startBallX, int startBallY) {
-        this.startBallX = startBallX;
-        this.startBallY = startBallY;
+    public AnimPanel(int startShipX, int startShipY) {
         setPreferredSize(new Dimension(600, 400));
         addComponentListener(new AnimPanelListener(this, startShipX, startShipY));
         balls = new Vector<>();
@@ -24,20 +22,23 @@ public class AnimPanel extends JPanel {
     public void startShipMotion(int startShipX, int startShipY) {
         shipMotion = new ShipMotion(startShipX, startShipY,
                 ThreadLocalRandom.current().nextInt(2, 5),
-                ThreadLocalRandom.current().nextInt(0, 3),
+                ThreadLocalRandom.current().nextInt(0, 3), true,
                 ship, getWidth(), getHeight() * 2 / 3);
         new Thread(shipMotion).start();
-        Timer timer = new Timer(16, new TimerListener(this));
+        Timer timer = new Timer(16, new ShipTimerListener(this));
         timer.start();
     }
 
     public void startBallMotion(BallInstance ballInst) {
+        int startBallX = getWidth()/2;
+        int startBallY = getHeight() * 2 / 3 - 20;
+
         ballInst.setMotion(new BallMotion(startBallX, startBallY,
                 ThreadLocalRandom.current().nextInt(-5, 5),
-                ThreadLocalRandom.current().nextInt(-3, 3),
+                ThreadLocalRandom.current().nextInt(-3, 3), true,
                 ballInst.getBall(), getWidth(), getHeight() * 2 / 3));
         new Thread(ballInst.getMotion()).start();
-        Timer timer = new Timer(16, new TimerListener(this));
+        Timer timer = new Timer(16, new BallTimerListener(this, ballInst, 100));
         timer.start();
     }
 
@@ -47,12 +48,17 @@ public class AnimPanel extends JPanel {
         repaint();
     }
 
-    public void setShipMotion(ShipMotion shipMotion) {
-        this.shipMotion = shipMotion;
+    public void removeBall(BallInstance ballInst){
+        balls.remove(ballInst);
     }
 
-    public ShipMotion getShipMotion() {
-        return shipMotion;
+    public void removeShip() {
+        // остановите motion если есть
+        if (shipMotion != null) {
+            shipMotion.setRunning(false); // или другой способ остановки
+        }
+        ship = null;
+        SwingUtilities.invokeLater(this::repaint);
     }
 
     @Override
@@ -64,6 +70,7 @@ public class AnimPanel extends JPanel {
             paintCanon(g2);
             paintBalls(g2);
             paintShip(g2);
+            paintExplosion(g2);
         } finally {
             g2.dispose();
         }
@@ -92,16 +99,55 @@ public class AnimPanel extends JPanel {
     }
 
     private void paintCanon(Graphics2D g2) {
-        g2.translate(400, 250);
-        canon.draw(g2);
-        g2.translate(-400, -250);
+        int startCanonX = getWidth()/2;
+        int startCanonY = getHeight() * 2 / 3 - 20;
+
+        if(canon != null){
+            g2.translate(startCanonX, startCanonY);
+            canon.draw(g2);
+            g2.translate(-startCanonX, -startCanonY);
+        }
     }
 
     private void paintShip(Graphics2D g2) {
-        if (shipMotion != null) {
+        if (ship != null && shipMotion != null) {
             g2.translate(shipMotion.getCoordX(), shipMotion.getCoordY());
             ship.draw(g2);
             g2.translate(-shipMotion.getCoordX(), -shipMotion.getCoordY());
         }
+    }
+
+    public void paintExplosion(Graphics2D g2) {
+        if (exp != null && ship == null){
+            int Xstep = 0;
+            int Ystep = 0;
+            for(int i = 0 ; i < 10; i++){
+                Xstep = ThreadLocalRandom.current().nextInt(-50, 50);
+                Ystep = ThreadLocalRandom.current().nextInt(-50, 50);
+                g2.translate(shipMotion.getCoordX() + Xstep, shipMotion.getCoordY() + Ystep);
+                exp.draw(g2);
+                g2.translate(-shipMotion.getCoordX() - Xstep, -shipMotion.getCoordY() - Ystep);
+            }
+        }
+    }
+
+    public void setShipMotion(ShipMotion shipMotion) {
+        this.shipMotion = shipMotion;
+    }
+
+    public ShipMotion getShipMotion() {
+        return shipMotion;
+    }
+
+    public ShipPainter getShip() {
+        return ship;
+    }
+
+    public CannonPainter getCanon() {
+        return canon;
+    }
+
+    public Vector<BallInstance> getBalls() {
+        return balls;
     }
 }

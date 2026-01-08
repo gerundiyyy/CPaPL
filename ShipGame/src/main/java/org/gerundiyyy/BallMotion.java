@@ -1,30 +1,34 @@
 package org.gerundiyyy;
 
-
 import java.awt.geom.Rectangle2D;
 
 public class BallMotion extends MotionModel implements Runnable {
+    private final Object lock = new Object();
     private final BallPainter painter;
     private final int seaW, seaH;
-    private volatile boolean running = true;
 
-    public BallMotion(int CoordX, int CoordY, int SpeedX, int SpeedY,
+    public BallMotion(int CoordX, int CoordY, int SpeedX, int SpeedY, boolean running,
                       BallPainter painter, int seaW, int seaH) {
-        super(CoordX, CoordY, SpeedX, SpeedY);
+        super(CoordX, CoordY, SpeedX, SpeedY, running);
         this.painter = painter;
         this.seaW = seaW;
         this.seaH = seaH;
+
+        calculateBounds();
+        calculateRectCollision();
     }
 
+    @Override
     protected void updatePosition() {
-        CoordX += SpeedX;
-        CoordY += SpeedY;
-        Rectangle2D bounds = painter.getBounds();
-        int ballW = (int) Math.ceil(bounds.getWidth());
-        int ballH = (int) Math.ceil(bounds.getHeight());
-
-        if (CoordX < 0 || CoordX + ballW / 2 > seaW) SpeedX = -SpeedX;
-        if (CoordY < 0 || CoordY + ballH / 2 > seaH) SpeedY = -SpeedY;
+        synchronized (lock) {
+            calculateBounds(); // обновляет modelW/modelH
+            CoordX += SpeedX;
+            CoordY += SpeedY;
+            // корректные проверки границ с учётом ширины/высоты модели
+            checkWBorder();
+            checkHBorder();
+            calculateRectCollision();
+        }
     }
 
     @Override
@@ -40,10 +44,45 @@ public class BallMotion extends MotionModel implements Runnable {
         }
     }
 
-    public void stop() { running = false; }
+    @Override
+    public void calculateBounds(){
+        Rectangle2D bounds = painter.getBounds();
+        modelW = (int) Math.ceil(bounds.getWidth());
+        modelH = (int) Math.ceil(bounds.getHeight());
+    }
 
-    // безопасные геттеры
-    public int getCoordX() { return CoordX; }
-    public int getCoordY() { return CoordY; }
+    @Override
+    public synchronized void checkWBorder(){
+        if (CoordX < 0) {
+            CoordX = 0;
+            SpeedX = -SpeedX;
+        } else if (CoordX + modelW > seaW) {
+            CoordX = seaW - modelW;
+            SpeedX = -SpeedX;
+        }
+    }
+
+    @Override
+    public synchronized void checkHBorder(){
+        if (CoordY < 0) {
+            CoordY = 0;
+            SpeedY = -SpeedY;
+        } else if (CoordY + modelH > seaH) {
+            CoordY = seaH - modelH;
+            SpeedY = -SpeedY;
+        }
+    }
+
+    public BallPainter getPainter() {
+        return painter;
+    }
+
+    public int getSeaW() {
+        return seaW;
+    }
+
+    public int getSeaH() {
+        return seaH;
+    }
 }
 
