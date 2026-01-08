@@ -121,9 +121,9 @@ public class AnimPanel extends JPanel {
         if (exp != null && ship == null){
             int Xstep = 0;
             int Ystep = 0;
-            for(int i = 0 ; i < 10; i++){
-                Xstep = ThreadLocalRandom.current().nextInt(-50, 50);
-                Ystep = ThreadLocalRandom.current().nextInt(-50, 50);
+            for(int i = 0 ; i < 3; i++){
+                Xstep = ThreadLocalRandom.current().nextInt(-30, 30);
+                Ystep = ThreadLocalRandom.current().nextInt(-30, 30);
                 g2.translate(shipMotion.getCoordX() + Xstep, shipMotion.getCoordY() + Ystep);
                 exp.draw(g2);
                 g2.translate(-shipMotion.getCoordX() - Xstep, -shipMotion.getCoordY() - Ystep);
