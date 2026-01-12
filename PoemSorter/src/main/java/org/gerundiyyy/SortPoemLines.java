@@ -40,13 +40,13 @@ public class SortPoemLines {
             List<String> poem = poems.get(i);
             System.out.println("Poem " + (i + 1) + " before sorting:");
             printLines(poem);
-
+            System.out.println("--------------------------------------------------");
             // Sort lines by ascending length
             poem.sort(Comparator.comparingInt(String::length));
 
             System.out.println("Poem " + (i + 1) + " after sorting by line length:");
             printLines(poem);
-            System.out.println("--------------------------------------------------");
+            System.out.println("===================================================");
         }
     }
 
