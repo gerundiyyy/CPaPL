@@ -10,9 +10,11 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/CarApp" />
+            <option value="$PROJECT_DIR$/Chat" />
             <option value="$PROJECT_DIR$/Listeners" />
             <option value="$PROJECT_DIR$/PoemSorter" />
             <option value="$PROJECT_DIR$/ShipGame" />
+            <option value="$PROJECT_DIR$/database" />
           </set>
         </option>
       </GradleProjectSettings>

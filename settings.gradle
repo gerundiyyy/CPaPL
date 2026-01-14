@@ -1,3 +1,5 @@
 rootProject.name = 'CPaPL'
 include 'Listeners', 'CarApp', 'ShipGame'
 include 'PoemSorter'
+include 'Chat'
+include 'database'
